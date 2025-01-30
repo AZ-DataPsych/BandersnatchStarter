@@ -10,7 +10,7 @@ from app.data import Database
 from app.graph import chart
 from app.machine import Machine
 
-SPRINT = 0
+SPRINT = 2
 APP = Flask(__name__)
 
 
@@ -28,19 +28,25 @@ def home():
 def data():
     if SPRINT < 1:
         return render_template("data.html")
-    db = Database()
+    db = Database(collection="My collection") 
     return render_template(
         "data.html",
         count=db.count(),
         table=db.html_table(),
     )
 
+@APP.route("/seed")
+def seed():
+    db = Database(collection="My collection")
+    db.seed(1000)
+    return f"Database seeded with 1000 monsters! Total records: {db.count()}"
+
 
 @APP.route("/view", methods=["GET", "POST"])
 def view():
     if SPRINT < 2:
         return render_template("view.html")
-    db = Database()
+    db = Database(collection="My collection")
     options = ["Level", "Health", "Energy", "Sanity", "Rarity"]
     x_axis = request.values.get("x_axis") or options[1]
     y_axis = request.values.get("y_axis") or options[2]
@@ -96,5 +102,6 @@ def model():
     )
 
 
-if __name__ == '__main__':
-    APP.run()
+if __name__ == "__main__":
+   APP.run()
+
